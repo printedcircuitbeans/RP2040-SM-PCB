@@ -1,4 +1,9 @@
+- Finally had time to get back to work on this project
+
+
 12/1/2024
+- Edited board shape to integrate battery into center, to reduce thickness significantly. Battery capacity went from 2000mAH to 400mAH : Current projected battery life with normal usage is ~4 days. (full load being ~8.4 hours)
+  (this was calculated with rough and pessimistic values so true battery life can easily be more (50mA at 3.3v, when battery provides between 4.2v and 3.2v - and once again, using excessive power consumption values)
 - Replaced BN180 and HC05 modules with MAX-M10S and DA14531 respectivley, saving space and providing more accurate measurments as well as far lower theoretical power consumption.
   -> Both chips now use external antennas, connected via a UFL connector, allowing for a metal case without concerns of signal blocking.
 
