@@ -1,0 +1,8 @@
+12/1/2024
+- Replaced BN180 and HC05 modules with MAX-M10S and DA14531 respectivley, saving space and providing more accurate measurments as well as far lower theoretical power consumption.
+  -> Both chips now use external antennas, connected via a UFL connector, allowing for a metal case without concerns of signal blocking.
+
+-MAX-M10S functions on the same interface as the BN180 (UART0)
+-DA14531 uses the UART1 interface, and is connected in such a manner that the RP2040 is able to program the chip over UART.
+
+-Exposed debugging interfaces of RP2040 and DA14531 via pads in case they are needed in developpement.
