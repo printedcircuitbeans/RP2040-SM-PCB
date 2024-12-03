@@ -11,3 +11,8 @@
 -DA14531 uses the UART1 interface, and is connected in such a manner that the RP2040 is able to program the chip over UART.
 
 -Exposed debugging interfaces of RP2040 and DA14531 via pads in case they are needed in developpement.
+
+12/3/24
+-Had time again to progress on the design
+-Replaced a 0603 few capacitors and some pull-ups with 0402 for space saving reasons
+-Situatied BMS circuit under usb-connector, charge circuit on opposing side of board
