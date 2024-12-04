@@ -16,3 +16,6 @@
 -Had time again to progress on the design
 -Replaced a few 0603 capacitors and some pull-ups with 0402 for space saving reasons
 -Situatied BMS circuit under usb-connector, charge circuit on opposing side of board
+
+12/5/24
+-Minor progress
