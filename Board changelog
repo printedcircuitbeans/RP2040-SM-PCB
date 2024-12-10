@@ -19,3 +19,9 @@
 
 12/5/24
 -Minor progress
+
+12/10/24
+-Major progress :
+  Board design settled (optimized capacitor sizes to mostly 0402 for space saving)
+  Started transfering schematic to a new file to have a cleaner sheet.
+  Final board layout begun
