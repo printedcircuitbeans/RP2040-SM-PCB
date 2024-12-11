@@ -25,3 +25,7 @@
   Board design settled (optimized capacitor sizes to mostly 0402 for space saving)
   Started transfering schematic to a new file to have a cleaner sheet.
   Final board layout begun
+
+12/11/24 
+-Start of majoir component placement, completion of clean sheet.
+-> Need to replace some designators and change 0603 caps to 0402 if requirments allow
