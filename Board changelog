@@ -30,6 +30,12 @@
 -Start of majoir component placement, completion of clean sheet.
 -> Need to replace some designators and change 0603 caps to 0402 if requirments allow
 
-12/11/24
+12/15/24
 - More routing
 - Charge circuit successfully situated
+
+12/16/24
+- General routing and component placement
+- RF circuits situated with far more convenient antenna placement
+- ! USB line routing is not the preffered option - to be revised as board progress moves on
+- > 2 more sensors to be placed and routed, as well as all main traces and signal traces, as well as placing passives.
