@@ -45,3 +45,8 @@
 
 1/10/25
 - Added BOM to repo
+
+2/11/25 
+ - received pcbs and components, spent a week troubleshooting, now have a working board.
+PMS leaves much to be desired, as the board runs hot when charging and with a full screen backlight, as well as an inability to fully turn off the screen.
+Gps, max30100, screen are confirmed working, need to confirm magnometer, bme 680, SD card, and ble system, as well as troubleshooting pms and charging circuts
