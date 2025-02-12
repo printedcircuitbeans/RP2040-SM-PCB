@@ -50,3 +50,7 @@
  - received pcbs and components, spent a week troubleshooting, now have a working board.
 PMS leaves much to be desired, as the board runs hot when charging and with a full screen backlight, as well as an inability to fully turn off the screen.
 Gps, max30100, screen are confirmed working, need to confirm magnometer, bme 680, SD card, and ble system, as well as troubleshooting pms and charging circuts
+2/13/25 
+
+- After further troubleshooting all shorts are eliminated and the watch is no longer overheating.
+-> Will soon commit a basic version of OS to repo
