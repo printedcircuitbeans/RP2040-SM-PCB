@@ -24,8 +24,8 @@ const int Bt2 = 7;
 const int Bt3 = 20;
 const int Bt4 = 21;
 
-float gpsramlat[120];
-float gpsramlng[120];
+float gpsramlat[600];
+float gpsramlng[600];
 float gpsminy = 0;
 float gpsminx = 0;
 float gpsmaxx = 0;
@@ -51,7 +51,13 @@ void gpsSleep() {
   uint8_t standbyCmd[] = { 0xB5, 0x62, 0x02, 0x41, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x4B, 0xDC };
   Serial1.write(standbyCmd, sizeof(standbyCmd));
 }
-
+static void smartDelay(unsigned long ms) {
+  unsigned long start = millis();
+  do {
+    while (GPS_SERIAL.available())
+      gps.encode(GPS_SERIAL.read());
+  } while (millis() - start < ms);
+}
 
 void setup() {
   tft.initR(INITR_BLACKTAB);
@@ -86,37 +92,37 @@ void loop() {
 
   digitalWrite(ScrMOS, scrn0N);
   if (scrn0N) {
-    tft.setFont(&FreeMonoBold12pt7b);
-    tft.setTextColor(ST7735_WHITE, ST7735_BLACK);
-    tft.fillRect(0, 0, 160, 50, ST7735_BLACK);
-    tft.setCursor(10, 30);
-    tft.print(hour);
-    tft.print(":");
-    tft.print(minut);
-    tft.print(":");
-    tft.println(second);
-    tft.setFont();
+    if (GPS_SERIAL.available() > 0) {
+      gps.encode(GPS_SERIAL.read());
+    }
+    if (gps.time.isUpdated()) {
 
-    if (digitalRead(STAT1) && !digitalRead(STAT2)) {
-      tft.setTextColor(ST7735_GREEN, ST7735_BLACK);
-      tft.println("Charge Complete     ");
+      tft.setFont(&FreeMonoBold12pt7b);
       tft.setTextColor(ST7735_WHITE, ST7735_BLACK);
-    }
-    if (digitalRead(STAT2) && !digitalRead(STAT1)) {
-      tft.setTextColor(ST7735_RED, ST7735_BLACK);
-      tft.println("Charging            ");
-      tft.setTextColor(ST7735_WHITE, ST7735_BLACK);
-    }
-    if (digitalRead(STAT1) && digitalRead(STAT2)) {
-      tft.setTextColor(ST7735_BLUE, ST7735_BLACK);
-      tft.println("Charger disconnected ");
-      tft.setTextColor(ST7735_WHITE, ST7735_BLACK);
-    }
-    while (GPS_SERIAL.available()) {
-      char c = GPS_SERIAL.read();
-      gps.encode(c);  // Feed data to TinyGPS++
-    }
-    if (gps.date.isValid()) {
+      tft.fillRect(0, 0, 160, 50, ST7735_BLACK);
+      tft.setCursor(10, 30);
+      tft.print(hour);
+      tft.print(":");
+      tft.print(minut);
+      tft.print(":");
+      tft.println(second);
+      tft.setFont();
+
+      if (digitalRead(STAT1) && !digitalRead(STAT2)) {
+        tft.setTextColor(ST7735_GREEN, ST7735_BLACK);
+        tft.println("Charge Complete     ");
+        tft.setTextColor(ST7735_WHITE, ST7735_BLACK);
+      }
+      if (digitalRead(STAT2) && !digitalRead(STAT1)) {
+        tft.setTextColor(ST7735_RED, ST7735_BLACK);
+        tft.println("Charging            ");
+        tft.setTextColor(ST7735_WHITE, ST7735_BLACK);
+      }
+      if (digitalRead(STAT1) && digitalRead(STAT2)) {
+        tft.setTextColor(ST7735_BLUE, ST7735_BLACK);
+        tft.println("Charger disconnected ");
+        tft.setTextColor(ST7735_WHITE, ST7735_BLACK);
+      }
       hour = gps.time.hour() + 1;
       minut = gps.time.minute();
       second = gps.time.second();
@@ -131,48 +137,63 @@ void loop() {
     }
 
 
-    if (digitalRead(Bt1) && dgWheel == 0) {  //the ultimate UI skullfucking
+    if (digitalRead(Bt3) && dgWheel == 0) {  //the ultimate UI skullfucking
       delay(100);
       i = 0;
-
+      gpsminx = 100;
+      gpsminy = 100;
+      gpsmaxx = -1;
+      gpsmaxy = -1;
+      tft.fillScreen(ST7735_ORANGE);
+      tft.setCursor(0, 60);
+      tft.println("GPS UTILITY NOT READY");
+      tft.println("NO GPS LOCK");
       while (!digitalRead(Bt1)) {
-        delay(500);
-        tft.fillScreen(ST7735_BLACK);
-        tft.setCursor(0, 0);
-        tft.println("GPS UTILITY BASIC");
-        tft.println(gps.location.lat());
-        tft.println(gps.location.lng());
-        tft.print(gpsminx);
-        tft.print(",");
-        tft.print(gpsminy);
-        tft.print(",");
-        tft.print(gpsmaxx);
-        tft.print(",");
-        tft.println(gpsmaxy);
-        gpsramlat[i] = gps.location.lat();
-        gpsramlng[i] = gps.location.lng();
 
-        for (ii = 0; ii != 120; ii++) {
-          if (gpsramlat[i] < gpsminx) {  //this shit will only resize in one direction
-            gpsminx = gpsramlat[i];
-          }
-          if (gpsramlat[i] > gpsmaxx) {
-            gpsmaxx = gpsramlat[i];
-          }
-          if (gpsramlng[i] < gpsminy) {
-            gpsminy = gpsramlng[i];
-          }
-          if (gpsramlng[i] > gpsmaxy) {
-            gpsmaxy = gpsramlng[i];
-          }
-        }
-        ii = 0;
-        while (i != ii) {
-          tft.drawLine((gpsramlat[ii] - gpsminx) * (128 / (gpsmaxx - gpsminx)), (gpsramlng[ii] - gpsminy) * (128 / (gpsmaxy - gpsminy)), (gpsramlat[ii + 1] - gpsminx) * (128 / (gpsmaxx - gpsminx)), (gpsramlng[ii + 1] - gpsminy) * (128 / (gpsmaxy - gpsminy)), ST7735_ORANGE);
-          ii++;
-        }
+        smartDelay(500);
 
-        tft.drawRect(0, 32, 128, 128, ST7735_WHITE);
+        if (gps.location.isUpdated()) {
+
+          tft.fillScreen(ST7735_BLACK);
+          tft.setCursor(0, 0);
+          tft.println("GPS UTILITY BASIC");
+          gpsramlat[i] = gps.location.lat(), 9;
+          gpsramlng[i] = gps.location.lng(), 9;
+          tft.println(gpsramlat[i], 9);
+          tft.println(gpsramlng[i], 9);
+          tft.print(gpsminx);
+          tft.print(",");
+          tft.print(gpsminy);
+          tft.print(",");
+          tft.print(gpsmaxx);
+          tft.print(",");
+          tft.println(gpsmaxy);
+          tft.println(i);
+
+
+          for (ii = 0; ii != i; ii++) {
+            if (gpsramlat[ii] < gpsminx) {  //this shit will only resize in one direction
+              gpsminx = gpsramlat[ii];
+            }
+            if (gpsramlat[ii] > gpsmaxx) {
+              gpsmaxx = gpsramlat[ii];
+            }
+            if (gpsramlng[ii] < gpsminy) {
+              gpsminy = gpsramlng[ii];
+            }
+            if (gpsramlng[ii] > gpsmaxy) {
+              gpsmaxy = gpsramlng[ii];
+            }
+          }
+          ii = 0;
+          while (i != ii) {
+            tft.drawLine((gpsramlat[ii] - gpsminx) * (128 / (gpsmaxx - gpsminx)), (gpsramlng[ii] - gpsminy) * (128 / (gpsmaxy - gpsminy)) + 32, (gpsramlat[ii + 1] - gpsminx) * (128 / (gpsmaxx - gpsminx)), (gpsramlng[ii + 1] - gpsminy) * (128 / (gpsmaxy - gpsminy)) + 32, ST7735_ORANGE);
+            ii++;
+          }
+
+          tft.drawRect(0, 32, 128, 128, ST7735_WHITE);
+          i++;
+        }
       }
       tft.fillScreen(ST7735_BLACK);
     }
