@@ -15,6 +15,6 @@ PCB and circuit designs for the RP2040 open source smartwatch
 - Integrated charge circuit and BMS (Battery Management System)
 - 400 mAh LiPo battery and UPS (Uninterruptible Power Supply) like power path design. 
 
-<img width="435" height="594" alt="image" src="https://github.com/user-attachments/assets/6c2ac127-7a2a-4924-9ef8-f3939657c862" />
-<img width="435" height="594" alt="image" src="https://github.com/user-attachments/assets/8bf6a951-1638-43d7-adb3-79ef8d951da8" />
+<img width="348" height="475" alt="image" src="https://github.com/user-attachments/assets/6c2ac127-7a2a-4924-9ef8-f3939657c862" />
+<img width="348" height="475" alt="image" src="https://github.com/user-attachments/assets/8bf6a951-1638-43d7-adb3-79ef8d951da8" />
 <img width="1540" height="853" alt="image" src="https://github.com/user-attachments/assets/62799625-8b3d-48fe-8a55-8fbfa5c0275a" />
