@@ -1,0 +1,20 @@
+----------------------------------------------------------------------------------------------------------------------------------
+NCDrill File Report For: DEV-NEAT-FINAL.CMPcbDoc   1/15/2025  8:39:52 PM
+----------------------------------------------------------------------------------------------------------------------------------
+
+Layer Pair : Top Layer to Bottom Layer
+ASCII RoundHoles File : DEV-NEAT-FINAL-RoundHoles.TXT
+ASCII SlotHoles File : DEV-NEAT-FINAL-SlotHoles.TXT
+
+Tool       Hole Size               Hole Tolerance               Hole Type       Hole Count   Plated         Tool Travel
+----------------------------------------------------------------------------------------------------------------------------------
+T1      8mil (0.2mm)                                              Round             13        PTH        1.42inch (36.16mm)
+T2      12mil (0.3mm)                                             Round             215       PTH        15.06inch (382.59mm)
+T3      26mil (0.65mm)                                            Slot              4         PTH        1.45inch (36.89mm)
+T4      33mil (0.85mm)                                            Round             10        PTH        4.25inch (108.00mm)
+T5      79mil (2mm)                                               Round             2         PTH        1.26inch (32.00mm)
+T6      26mil (0.65mm)                                            Round             2         NPTH       0.23inch (5.80mm)
+----------------------------------------------------------------------------------------------------------------------------------
+Totals                                                                              246
+
+Total Processing Time (hh:mm:ss) : 00:00:01

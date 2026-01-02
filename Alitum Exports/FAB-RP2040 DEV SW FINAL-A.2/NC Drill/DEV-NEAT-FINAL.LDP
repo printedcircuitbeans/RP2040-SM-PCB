@@ -1,0 +1,3 @@
+Layer Pairs Export File for PCB: C:\Users\babal\AppData\Local\TempReleases\Snapshot\2\DEV-NEAT-FINAL.CMPcbDoc
+LayersSetName=Top_Bot_Thru_Holes|DrillFile=dev-neat-final-roundholes.txt|DrillLayers=gtl,g1,g2,gbl
+LayersSetName=Top_Bot_Slot_Holes|DrillFile=dev-neat-final-slotholes.txt|DrillLayers=gtl,g1,g2,gbl
