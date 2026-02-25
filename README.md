@@ -1,5 +1,5 @@
 # RP2040-SM-PCB
-PCB and circuit designs for the RP2040 open source smartwatch
+PCB and circuit designs for my RP2040 open source smartwatch
 
 - Features :
 - 160*120 TFT screen 
@@ -15,7 +15,10 @@ PCB and circuit designs for the RP2040 open source smartwatch
 - Integrated charge circuit and BMS (Battery Management System)
 - 400 mAh LiPo battery and UPS (Uninterruptible Power Supply) like power path design. 
 
-The watch runs a low level OS which handles all functions and manages a GUI interface. Currently I am having issues with flashing the watch - which is a new development as the flash worked before.
+
+I'm working on a small datasheet to make the watch easier to understand and to build if someone wishes to do so.
+
+The watch runs a low level OS which handles all functions and manages a GUI interface. Currently I am having issues with flashing the watch - which is a new development as the flash worked before. I'll likely write up an errata for the watch.
 
 <img width="348" height="475" alt="image" src="https://github.com/user-attachments/assets/6c2ac127-7a2a-4924-9ef8-f3939657c862" />
 <img width="348" height="475" alt="image" src="https://github.com/user-attachments/assets/8bf6a951-1638-43d7-adb3-79ef8d951da8" />
