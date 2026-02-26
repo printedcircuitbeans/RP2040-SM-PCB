@@ -1,6 +1,12 @@
 # RP2040-SM-PCB
 PCB and circuit designs for my RP2040 open source smartwatch
 
+This project was created as I wanted to develop my own smartwatch from the ground up, learning PCB design, routing, component selection and layout skills along the way.
+I picked the RP2040 microcontroller as I had heard about it's release and it seemed interesting for my application, that is, running a large amount of devices on relatively low power, but with sufficient peformance. It had enough pins, could support up to 16MB of flash, and importantly was small and cheap.
+
+I prototyped the watch on a breadboard intially so I was able to swap components out and make changes quite quickly. I decided to use a GPS to fetch the time and be able to have positioning data - I originally prototyped with a BN180 GPS in the breadboard phase but decided to use a U-Blox M10s as it was smaller and had a better feature set. The presence of a GPS on the board opened the door to have a local map tool, and so I needed storage. I decided to use an SD card for this, as it provided an upgradeable storage medium.
+
+
 - Features :
 - 160*120 TFT screen 
 - RP2040 Dual core microcontroller
