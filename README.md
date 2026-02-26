@@ -25,6 +25,7 @@ I prototyped the watch on a breadboard intially so I was able to swap components
 I'm working on a small datasheet to make the watch easier to understand and to build if someone wishes to do so.
 
 The watch runs a low level OS which handles all functions and manages a GUI interface. Currently I am having issues with flashing the watch - which is a new development as the flash worked before. I'll likely write up an errata for the watch.
+I'm also working on developing a full "OS" for the watch but development on that front is stalled until the flash problem is resolved.
 
 <img width="348" height="475" alt="image" src="https://github.com/user-attachments/assets/6c2ac127-7a2a-4924-9ef8-f3939657c862" />
 <img width="348" height="475" alt="image" src="https://github.com/user-attachments/assets/8bf6a951-1638-43d7-adb3-79ef8d951da8" />
