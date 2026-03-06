@@ -33,7 +33,7 @@ I'm also working on developing a full "OS" for the watch but development on that
 <img width="1540" height="853" alt="image" src="https://github.com/user-attachments/assets/62799625-8b3d-48fe-8a55-8fbfa5c0275a" />
 
 
-Licence footnote generated using AI, proof read by me with the official liscence as reference.
+Licence footnote generated using AI, proof read by me with the official licence as reference.
 ## License
 
 This project is licensed under the Creative Commons 
