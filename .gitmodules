@@ -1,0 +1,3 @@
+[submodule "Code/RPI-OS/extern/pico-st7735"]
+	path = Code/RPI-OS/extern/pico-st7735
+	url = https://github.com/bablokb/pico-st7735
