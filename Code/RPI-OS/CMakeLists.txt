@@ -69,7 +69,7 @@ endif()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(RPI-OS RPI-OS.c )
+add_executable(RPI-OS RPI-OS.c minmea.c)
 
 pico_set_program_name(RPI-OS "RPI-OS")
 pico_set_program_version(RPI-OS "0.1")
@@ -79,6 +79,11 @@ pico_enable_stdio_uart(RPI-OS 0)
 pico_enable_stdio_usb(RPI-OS 1)
 
 add_subdirectory(extern/pico-st7735)
+
+target_compile_definitions(RPI-OS PRIVATE
+    MINMEA_INCLUDE_COMPAT           # ← needed for non-Unix (Pico)
+    timegm=mktime 
+)
 
 # Add the standard library to the build
 target_link_libraries(RPI-OS
