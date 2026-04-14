@@ -90,6 +90,7 @@ target_link_libraries(RPI-OS
         pico_stdlib
         hardware_spi
         st7735
+        hardware_rtc 
 )
 
 # Add the standard include files to the build

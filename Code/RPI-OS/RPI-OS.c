@@ -7,11 +7,11 @@
 #include "hardware/xosc.h"
 #include "hardware/structs/scb.h"
 #include "hardware/watchdog.h"
+#include "hardware/rtc.h"
+#include "pico/util/datetime.h"
 
 #include "UI.h"
-
 #include "minmea.h"
-
 #include "hardware/uart.h"
 
 #define S2 6
@@ -21,10 +21,49 @@
 
 #define GPS_UART uart0
 #define BAUD_RATE 9600
-// We are using pins 0 and 1, but see the GPIO function select table in the
-// datasheet for information on which other pins can be used.
 #define UART_TX_PIN 0
 #define UART_RX_PIN 1
+
+// ── Timekeeping ───────────────────────────────────────────────────────────────
+static bool g_time_valid = false;
+
+void timekeeping_init(void)
+{
+    rtc_init();
+    datetime_t t = {.year = 2025, .month = 1, .day = 1, .dotw = 3, .hour = 0, .min = 0, .sec = 0};
+    rtc_set_datetime(&t);
+    sleep_us(64);
+}
+
+void timekeeping_sync_from_gps(int hours, int minutes, int seconds)
+{
+    // Subtract 1s to compensate for the SDK's known RTC false-tick
+    if (--seconds < 0)
+    {
+        seconds = 59;
+        if (--minutes < 0)
+        {
+            minutes = 59;
+            if (--hours < 0)
+                hours = 23;
+        }
+    }
+    datetime_t t = {.year = 2025, .month = 1, .day = 1, .dotw = 3, .hour = hours, .min = minutes, .sec = seconds};
+    rtc_set_datetime(&t);
+    sleep_us(64);
+    g_time_valid = true;
+}
+
+bool timekeeping_get(int *hours, int *minutes, int *seconds)
+{
+    datetime_t t;
+    if (!rtc_get_datetime(&t))
+        return false;
+    *hours = t.hour;
+    *minutes = t.min;
+    *seconds = t.sec;
+    return true;
+}
 
 void init_hw()
 {
@@ -38,39 +77,33 @@ void init_hw()
 
 void dormant(uint16_t WAKEPIN)
 {
-    // Enable wake on GPIO
+    gpio_put(10, 0);
+    sleep_ms(1000);
     gpio_set_dormant_irq_enabled(WAKEPIN, GPIO_IRQ_EDGE_RISE, true);
-    // Enter dormant
     xosc_dormant();
 }
 
 bool read_nmea_line(char *buf, size_t max_len)
 {
     static size_t pos = 0;
-
     while (uart_is_readable(GPS_UART))
     {
         char c = uart_getc(GPS_UART);
-
         if (c == '\n')
         {
             buf[pos] = '\0';
             pos = 0;
-            return true; // complete line ready
+            return true;
         }
         else if (c != '\r')
         {
             if (pos < max_len - 1)
-            {
                 buf[pos++] = c;
-            }
             else
-            {
-                pos = 0; // line too long, discard
-            }
+                pos = 0;
         }
     }
-    return false; // line not complete yet
+    return false;
 }
 
 bool parse_gps_time(const char *line, int *hours, int *minutes, int *seconds)
@@ -88,22 +121,19 @@ bool parse_gps_time(const char *line, int *hours, int *minutes, int *seconds)
     return true;
 }
 
-// Returns true and fills out sat count if the line contained a valid GSV sentence
-bool parse_gps_satellites(const char *line, int *satellites) {
+bool parse_gps_satellites(const char *line, int *satellites)
+{
     if (minmea_sentence_id(line, false) != MINMEA_SENTENCE_GSV)
         return false;
-
     struct minmea_sentence_gsv frame;
     if (!minmea_parse_gsv(&frame, line))
         return false;
-
     *satellites = frame.total_sats;
     return true;
 }
 
 int main()
 {
-
     gpio_init(S2);
     gpio_set_dir(S2, GPIO_IN);
     gpio_init(S4);
@@ -111,71 +141,81 @@ int main()
 
     stdio_init_all();
     init_hw();
+    timekeeping_init(); //RTC keeps time while watch is awake to compensate for when gps signal may drop out
 
     TFT_GreenTab_Initialize();
-
     gpio_init(10);
     gpio_set_dir(10, 1);
     gpio_put(10, 1);
     fillScreen(ST7735_BLACK);
 
     uart_init(GPS_UART, BAUD_RATE);
-
-    // Set the TX and RX pins by using the function select on the GPIO
-    // Set datasheet for more information on function select
-    gpio_set_function(UART_TX_PIN, UART_FUNCSEL_NUM(UART_ID, UART_TX_PIN));
-    gpio_set_function(UART_RX_PIN, UART_FUNCSEL_NUM(UART_ID, UART_RX_PIN));
+    gpio_set_function(UART_TX_PIN, GPIO_FUNC_UART);
+    gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
 
     while (true)
     {
-        sleep_ms(100);
-        // fillScreen(ST7735_BLACK);
-        // drawText(0, 0, "System Booted", ST7735_WHITE, ST7735_BLACK, 1);
         gpio_put(10, 1);
-
         DrawThickRect(1, 1, 126, 158, 4, ST7735_BLUE);
 
         char line[160];
+
         if (read_nmea_line(line, sizeof(line)))
         {
-            drawText(10, 10, line, ST7735_WHITE, ST7735_BLACK, 1);
+            //drawText(10, 10, line, ST7735_WHITE, ST7735_BLACK, 1);
+            //printf(line);
+            int h, m, s;
+
+            if (parse_gps_time(line, &h, &m, &s))
+            {
+                char buffer[32];
+                snprintf(buffer, sizeof(buffer), "Time: %02d:%02d:%02d", h, m, s);
+
+                //drawText(5, 120, buffer, ST7735_WHITE, ST7735_BLACK, 1);
+
+                timekeeping_sync_from_gps(h, m, s);
+            }
+
+            int sats;
+            if (parse_gps_satellites(line, &sats))
+            {
+                char buffer[32];
+                snprintf(buffer, sizeof(buffer), "Sats: %02d", sats);
+                drawText(5, 110, buffer, ST7735_WHITE, ST7735_BLACK, 1);
+            }
         }
 
-        int h, m, s;
-        if (parse_gps_time(line, &h, &m, &s))
+        // Always display time from RTC (accurate before and after dormant)
         {
-            char buffer[32];
-            snprintf(buffer, sizeof(buffer), "Time: %02d:%02d:%02d\n", h, m, s);
-            drawText(5, 100, buffer, ST7735_WHITE, ST7735_BLACK, 1);
-        }
-        int sats;
-        if (parse_gps_satellites(line, &sats))
-        {
-            char buffer[32];
-            snprintf(buffer, sizeof(buffer), "Sattelites: %02d\n", sats);
-            drawText(5, 110, buffer, ST7735_WHITE, ST7735_BLACK, 1);
+            int h, m, s;
+            if (timekeeping_get(&h, &m, &s))
+            {
+                char buffer[32];
+                // '~' = free-running, not yet GPS-locked
+                snprintf(buffer, sizeof(buffer), "%s%02d:%02d:%02d",
+                         g_time_valid ? "" : "~", h+2, m, s);
+                drawText(15, 70, buffer, ST7735_WHITE, ST7735_BLACK, 2);
+            }
         }
 
         if (gpio_get(S2))
         {
             fillScreen(ST7735_BLACK);
             fillRect(0, 0, 5, 10, ST7735_RED);
-
-            for (uint16_t i = 1000; i != 0; i--)
+            for (uint16_t i = 100; i != 0; i--)
             {
                 char buffer[16];
                 snprintf(buffer, sizeof(buffer), "%d", i);
                 drawText(5, 0, buffer, ST7735_WHITE, ST7735_BLACK, 1);
-
                 if (!gpio_get(S2))
                     break;
             }
             if (gpio_get(S2))
             {
-                fillScreen(ST7735_BLACK);
                 gpio_put(10, 0);
-
-                dormant(S2);
+                sleep_ms(200);
+                fillScreen(ST7735_BLACK);
+                dormant(S2); 
             }
         }
 
@@ -183,13 +223,11 @@ int main()
         {
             fillScreen(ST7735_BLACK);
             fillRect(123, 0, 5, 10, ST7735_RED);
-
             for (uint16_t i = 1000; i != 0; i--)
             {
                 char buffer[16];
                 snprintf(buffer, sizeof(buffer), "%d", i);
                 drawText(100, 0, buffer, ST7735_WHITE, ST7735_BLACK, 1);
-
                 if (!gpio_get(S4))
                     break;
             }
